@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ReadAI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #ffffff;
+      --bg2: #f8f9fa;
+      --bg3: #e9ecef;
+      --border: #dee2e6;
+      --text: #212529;
+      --text-dim: #6c757d;
+      --accent: #7c6af7;
+      --accent2: #4ecdc4;
+      --yellow: #f5c842;
+      --green: #52c97a;
+      --purple: #b57bee;
+      --blue: #5599ff;
+      --red: #ff6b6b;
+      --radius: 10px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 360px;
+      min-height: 480px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Serif SC', serif;
+      font-size: 13px;
+      overflow-x: hidden;
+    }
+
+    /* Header */
+    .header {
+      padding: 16px 18px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -20px; left: -20px;
+      width: 120px; height: 120px;
+      background: radial-gradient(circle, rgba(124,106,247,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .logo-icon {
+      width: 30px; height: 30px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      box-shadow: 0 0 16px rgba(124,106,247,0.35);
+    }
+
+    .logo-text {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      background: linear-gradient(90deg, #333, var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 4px;
+    }
+
+    .nav-btn {
+      width: 28px; height: 28px;
+      border-radius: 7px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-dim);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+
+    .nav-btn:hover, .nav-btn.active {
+      background: var(--bg3);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Pages */
+    .page { display: none; padding: 16px 18px; animation: fadeIn 0.2s ease; }
+    .page.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Status bar */
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      background: var(--bg3);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      margin-bottom: 14px;
+    }
+
+    .status-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--text-dim);
+      flex-shrink: 0;
+      transition: all 0.3s;
+    }
+
+    .status-dot.ready { background: var(--green); box-shadow: 0 0 6px var(--green); }
+    .status-dot.loading { background: var(--yellow); animation: pulse 1s infinite; }
+    .status-dot.error { background: var(--red); }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .status-text { color: var(--text-dim); font-size: 12px; flex: 1; }
+    .status-text strong { color: var(--text); }
+
+    /* Mode Toggle */
+    .mode-toggle {
+      display: flex;
+      background: var(--bg3);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 3px;
+      margin-bottom: 14px;
+      gap: 3px;
+    }
+
+    .mode-btn {
+      flex: 1;
+      padding: 7px;
+      border-radius: 7px;
+      border: none;
+      background: transparent;
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 12px;
+      font-family: 'Noto Serif SC', serif;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .mode-btn.active {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 2px 8px rgba(124,106,247,0.4);
+    }
+
+    /* Analyze Button */
+    .analyze-btn {
+      width: 100%;
+      padding: 11px;
+      border-radius: var(--radius);
+      border: 1px solid var(--accent);
+      background: linear-gradient(135deg, var(--accent), #5a4fd4);
+      color: white;
+      cursor: pointer;
+      font-size: 13px;
+      font-family: 'Noto Serif SC', serif;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      transition: all 0.25s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      margin-bottom: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .analyze-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .analyze-btn:hover::before { opacity: 1; }
+    .analyze-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(124,106,247,0.4); }
+    .analyze-btn:active { transform: translateY(0); }
+    .analyze-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* Results */
+    .section-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .result-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px;
+      margin-bottom: 12px;
+      transition: border-color 0.2s;
+    }
+
+    .result-card:hover { border-color: var(--accent); }
+
+    .result-card p {
+      line-height: 1.7;
+      color: #c8c8d8;
+      font-size: 12px;
+    }
+
+    /* TOC */
+    .toc-list { list-style: none; }
+
+    .toc-item {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      padding: 5px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .toc-item:last-child { border-bottom: none; }
+    .toc-item:hover { padding-left: 4px; }
+
+    .toc-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .toc-text {
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.4;
+    }
+
+    .toc-item:hover .toc-text { color: var(--text); }
+
+    /* Annotation Legend */
+    .legend {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 9px;
+      background: var(--bg2);
+      border-radius: 7px;
+      border: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .legend-dot {
+      width: 10px; height: 10px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    /* Actions row */
+    .action-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .action-btn {
+      flex: 1;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg2);
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 11px;
+      font-family: 'Noto Serif SC', serif;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .action-btn:hover {
+      border-color: var(--accent2);
+      color: var(--accent2);
+      background: rgba(78,205,196,0.08);
+    }
+
+    /* Heatmap mini preview */
+    .heatmap-preview {
+      height: 48px;
+      background: var(--bg3);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+      padding: 4px;
+      margin-bottom: 14px;
+    }
+
+    .heatmap-bar {
+      flex: 1;
+      border-radius: 3px 3px 0 0;
+      min-height: 4px;
+      transition: all 0.3s;
+    }
+
+    /* Settings page */
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-dim);
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 9px 11px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      transition: all 0.2s;
+      outline: none;
+    }
+
+    .form-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(124,106,247,0.15);
+    }
+
+    .form-input::placeholder { color: var(--text-dim); opacity: 0.6; }
+
+    .form-hint {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+
+    .save-btn {
+      width: 100%;
+      padding: 10px;
+      border-radius: var(--radius);
+      border: 1px solid var(--accent2);
+      background: rgba(78,205,196,0.12);
+      color: var(--accent2);
+      cursor: pointer;
+      font-size: 13px;
+      font-family: 'Noto Serif SC', serif;
+      font-weight: 600;
+      transition: all 0.2s;
+      letter-spacing: 0.04em;
+    }
+
+    .save-btn:hover {
+      background: rgba(78,205,196,0.2);
+      box-shadow: 0 2px 12px rgba(78,205,196,0.2);
+    }
+
+
+    .preset-btn {
+      padding: 4px 10px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--bg3);
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 11px;
+      font-family: 'Noto Serif SC', serif;
+      transition: all 0.2s;
+    }
+    .preset-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .toast {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--bg3);
+      border: 1px solid var(--accent2);
+      color: var(--accent2);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      opacity: 0;
+      transition: all 0.3s;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Loading spinner */
+    .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Empty state */
+    .empty {
+      text-align: center;
+      padding: 24px 0;
+      color: var(--text-dim);
+    }
+    .empty .emoji { font-size: 32px; margin-bottom: 8px; }
+    .empty p { font-size: 12px; line-height: 1.6; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .density-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 500;
+    }
+
+    .density-high { background: rgba(255,107,107,0.15); color: var(--red); }
+    .density-mid { background: rgba(245,200,66,0.15); color: var(--yellow); }
+    .density-low { background: rgba(82,201,122,0.15); color: var(--green); }
+
+    .api-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      background: var(--bg3);
+      border-radius: 7px;
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-bottom: 14px;
+      border: 1px solid var(--border);
+    }
+
+    .api-status .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--text-dim);
+    }
+    .api-status.configured .dot { background: var(--green); box-shadow: 0 0 5px var(--green); }
+    .api-status.configured { color: var(--green); border-color: rgba(82,201,122,0.3); }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">
+    <div class="logo-icon">✦</div>
+    <span class="logo-text">ReadAI</span>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-btn active" data-page="main" title="分析">📖</button>
+    
+    <button class="nav-btn" data-page="settings" title="设置">⚙</button>
+  </div>
+</div>
+
+<!-- Main Page -->
+<div class="page active" id="page-main">
+
+  <div class="status-bar">
+    <div class="status-dot" id="statusDot"></div>
+    <span class="status-text" id="statusText">准备就绪，点击分析开始</span>
+  </div>
+
+  <button class="analyze-btn" id="analyzeBtn">
+    <span id="analyzeBtnIcon">⚡</span>
+    <span id="analyzeBtnText">开始分析文章</span>
+  </button>
+
+  <div id="resultArea">
+    <div class="empty">
+      <div class="emoji">✦</div>
+      <p>支持微信公众号、知乎、36氪<br>等主流平台的文章分析</p>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- Settings Page -->
+<div class="page" id="page-settings">
+  <div id="apiStatusBadge" class="api-status">
+    <div class="dot"></div>
+    <span id="apiStatusText">未配置 API</span>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">API 请求地址</label>
+    <input class="form-input" type="text" id="apiUrl" placeholder="https://api.openai.com/v1/chat/completions">
+    <p class="form-hint" id="urlHint">须填写完整路径，以 <code style="color:var(--accent2)">/chat/completions</code> 结尾</p>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">API Key</label>
+    <input class="form-input" type="password" id="apiKey" placeholder="sk-...">
+    <p class="form-hint">填写对应平台的 API Key（不会上传到任何服务器）</p>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">模型名称</label>
+    <input class="form-input" type="text" id="apiModel" placeholder="gpt-4o-mini">
+    <p class="form-hint" id="modelHint">点击下方快捷按钮可自动填入地址和模型名</p>
+  </div>
+
+  <div style="display:flex;gap:8px;margin-bottom:12px">
+    <button class="save-btn" id="saveSettingsBtn" style="flex:1">保存配置</button>
+    <button class="save-btn" id="testApiBtn" style="flex:0 0 72px;border-color:var(--accent);color:var(--accent)">测试</button>
+  </div>
+
+  <div class="section-title" style="margin-top:4px">快捷填入</div>
+  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px">
+    <button class="preset-btn" data-url="https://api.openai.com/v1/chat/completions" data-model="gpt-4o-mini">OpenAI</button>
+    <button class="preset-btn" data-url="https://api.deepseek.com/v1/chat/completions" data-model="deepseek-chat">DeepSeek</button>
+    <button class="preset-btn" data-url="https://api.moonshot.cn/v1/chat/completions" data-model="moonshot-v1-8k">Kimi</button>
+    <button class="preset-btn" data-url="https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions" data-model="qwen-turbo">通义</button>
+    <button class="preset-btn" data-url="https://api.anthropic.com/v1/messages" data-model="claude-3-5-haiku-20241022">Claude</button>
+    <button class="preset-btn" data-url="https://open.bigmodel.cn/api/paas/v4/chat/completions" data-model="glm-4-flash">智谱</button>
+  </div>
+  <div id="errorDetail" style="display:none;margin-top:8px;padding:9px 11px;background:rgba(255,107,107,0.08);border:1px solid rgba(255,107,107,0.25);border-radius:8px;font-size:11px;color:#ff9090;line-height:1.6;white-space:pre-wrap;word-break:break-all"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="src/popup.js"></script>
+</body>
+</html>
