@@ -17,6 +17,11 @@
 | 观点 | 紫色底 + 实线下划线 | 主观判断/立场 |
 | 专业术语 | 浅蓝字 + 蓝色虚线下划线 | 悬停显示解释（全局顶层浮层，不易被遮挡） |
 
+界面截图：
+<img width="2558" height="1308" alt="image" src="https://github.com/user-attachments/assets/64fa77af-63eb-4bd0-b4bd-517d32d09a9e" />
+<img width="2560" height="1308" alt="image" src="https://github.com/user-attachments/assets/12ef9730-c31e-4213-b85c-1deff6e740e4" />
+<img width="2560" height="1298" alt="image" src="https://github.com/user-attachments/assets/f4006dda-d504-46df-9fef-bb510ae442a9" />
+
 ### 阅读模式切换（右上角开关）
 - **增强**：显示所有 AI 标注与术语提示。
 - **原文**：隐藏标注，回到更“干净”的阅读体验。
@@ -41,6 +46,10 @@
 | API 请求地址 | OpenAI 兼容 Chat Completions 地址 | `https://api.openai.com/v1/chat/completions` |
 | API Key | 你的密钥 | `sk-...` |
 | 模型名称 | 使用的模型 | `gpt-4o-mini` |
+
+界面截图：
+<img width="748" height="1130" alt="image" src="https://github.com/user-attachments/assets/884229fd-a487-436c-95ec-313743e53884" />
+
 
 常见兼容服务示例：
 - **OpenAI**：`https://api.openai.com/v1/chat/completions`
