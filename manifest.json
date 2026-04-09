@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "ReadAI",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "AI 驱动的阅读增强工具，支持摘要、目录、原文标注功能",
   "permissions": [
     "activeTab",
