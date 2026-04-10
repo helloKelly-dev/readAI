@@ -1,6 +1,7 @@
 # ReadAI 阅读增强器（Chrome 扩展）
 
 一个基于 AI 的阅读增强 Chrome 扩展：在文章页生成摘要与目录，并对原文进行结构化划线标注与术语解释，帮助快速理解与定位重点。
+<img width="2560" height="1358" alt="image" src="https://github.com/user-attachments/assets/6fb2fbfc-428c-4066-9138-b9331c0e3736" />
 
 ## 功能特性
 
